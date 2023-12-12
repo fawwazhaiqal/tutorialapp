@@ -1,6 +1,10 @@
 <?php
 
+use App\Models\Post;
 use Illuminate\Support\Facades\Route;
+use League\CommonMark\Extension\FrontMatter\Data\LibYamlFrontMatterParser;
+use Spatie\YamlFrontMatter\YamlFrontMatter;
+use Symfony\Component\Yaml\Yaml;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,11 +18,23 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view ('posts');
-});
+    $files = File::files(resource_path("posts/"));
 
-Route::get('/post', function () {
-    return view ('post',[
-     'post'=>'<h1>Hello World</h1>'//post
+    foreach ($files as $file){
+        $documents[] = YamlFrontMatter::parseFile($file);
+    }
+
+    ddd($documents);
+
+    // return view ('posts',[
+    //     'posts'=> Post::all()
+    // ]);
+});
+    
+Route::get('posts/{post}', function ($slug) {
+    
+    return view('post',[
+        'post'=> Post::find($slug)
     ]);
-    });
+    
+    })->where('post','[A-z_\-]+');
