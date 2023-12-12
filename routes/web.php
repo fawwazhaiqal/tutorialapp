@@ -18,23 +18,21 @@ use Symfony\Component\Yaml\Yaml;
 */
 
 Route::get('/', function () {
-    $files = File::files(resource_path("posts/"));
+   
+    return view('posts',[
+        'posts'=> Post ::all()
 
-    foreach ($files as $file){
-        $documents[] = YamlFrontMatter::parseFile($file);
-    }
-
-    ddd($documents);
+    // return view ('posts',['posts'=>$post]);
 
     // return view ('posts',[
     //     'posts'=> Post::all()
     // ]);
+]);
 });
+
     
 Route::get('posts/{post}', function ($slug) {
-    
-    return view('post',[
-        'post'=> Post::find($slug)
+    return view('post', [
+        'post' => Post::find($slug)
     ]);
-    
-    })->where('post','[A-z_\-]+');
+})->where('post', '[A-z_\-]+');

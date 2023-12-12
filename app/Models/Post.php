@@ -3,26 +3,56 @@
 namespace App\Models;
 
 use Illuminate\Support\Facades\File;
+use Spatie\YamlFrontMatter\YamlFrontMatter;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-
+use Symfony\Component\Translation\Dumper\YamlFileDumper;
 
 class Post
 {
-    public static function all()
+    public$title;
 
-    {
-        $files = File::files(resource_path("posts/"));
+    public $excerpt;
 
-        return array_map(function ($file) {
-            return $file->getContents();
-        },$files);
-    } 
+    public$date;
+
+    public $body;
+
+    public $slug;
+
+    public function __construct($title,$excerpt,$date,$body,$slug){
+
+        $this->title = $title;
+        $this->excerpt = $excerpt;
+        $this->date = $date;
+        $this->body = $body;
+        $this->slug = $slug;
+    }
+    
+        public static function all()
+        {
+            return cache()->rememberForever('posts.all',function(){
+                return collect(File::files(resource_path("posts/")))
+            ->map(fn($file) =>YamlFrontMatter::parseFile($file))
+            ->map(fn($document)=>new Post(
+                $document->title,
+                $document->excerpt,
+                $document->date,
+                $document->body(),
+                $document->slug
+            ))
+                
+
+            });
+            
+            
+            ->sortByDesc('date');
+        }
+
         
     public static function find($slug){
-        base_path();
-        if(! file_exists($path = resource_path("posts/{$slug}.html"))){
-            throw new ModelNotFoundException();
+        {
+            return static::all()->firstWhere('slug',$slug);
         }
-        return cache()->remember("posts.{$slug}",1200,fn()=>file_get_contents($path));
+        
     }
     }
