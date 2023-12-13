@@ -7,6 +7,8 @@ use Spatie\YamlFrontMatter\YamlFrontMatter;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\Translation\Dumper\YamlFileDumper;
 
+use function PHPUnit\Framework\throwException;
+
 class Post
 {
     public$title;
@@ -39,20 +41,26 @@ class Post
                 $document->date,
                 $document->body(),
                 $document->slug
-            ))
-                
-
-            });
-            
-            
-            ->sortByDesc('date');
-        }
-
-        
-    public static function find($slug){
-        {
-            return static::all()->firstWhere('slug',$slug);
-        }
+            )
+            );       
+        })->sortByDesc('date');
         
     }
+
+        
+        public static function find($slug)
+        {
+            return static::all()->firstWhere('slug',$slug);
+
+        }
+        
+        public static function findOrFail($slug)
+        {
+            $post = static::find($slug);
+
+            if (!$post){
+                throw new ModelNotFoundException();
+            }
+            return $post;
+        }
     }
