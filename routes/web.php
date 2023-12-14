@@ -1,10 +1,11 @@
 <?php
 
 use App\Models\Post;
-use Illuminate\Support\Facades\Route;
-use League\CommonMark\Extension\FrontMatter\Data\LibYamlFrontMatterParser;
-use Spatie\YamlFrontMatter\YamlFrontMatter;
+use App\Models\Category;
 use Symfony\Component\Yaml\Yaml;
+use Illuminate\Support\Facades\Route;
+use Spatie\YamlFrontMatter\YamlFrontMatter;
+use League\CommonMark\Extension\FrontMatter\Data\LibYamlFrontMatterParser;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,3 +37,9 @@ Route::get('posts/{post:slug}', function (Post $post) {
         'post' => $post
     ]);
 });
+
+Route::get('categories/{category:slug}', function (Category $category) {
+    return view('posts', [
+        'posts' => $category->posts 
+    ]);
+}); 
